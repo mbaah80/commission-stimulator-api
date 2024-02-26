@@ -6,23 +6,38 @@ const commissionController = {
     // Calculate commissions for a staff member within a specified date range
     calculateCommissions: async (req, res) => {
         try {
-
             const { staffMember, startDate, endDate } = req.body;
-            console.log(new Date(startDate).toISOString().split('T')[0], new Date(endDate).toISOString().split('T')[0], 'date');
-            const orders = await Order.find({ staffMember,
+
+            // Input validation
+            if (!staffMember || !startDate || !endDate) {
+                return res.status(400).json({ message: 'Please provide staff member name, start date, and end date' });
+            }
+
+            // Query orders within the specified date range for the given staff member
+            const orders = await Order.find({
+                staffMember,
                 date: {
                     $gte: new Date(startDate).toISOString().split('T')[0],
                     $lte: new Date(endDate).toISOString().split('T')[0]
-            } }).populate('products');
+                }
+            }).populate('products');
 
+            // Check if orders exist for the specified criteria
+            // if (orders.length === 0) {
+            //     return res.status(404).json({ message: `No orders found for ${staffMember}` });
+            // }
+
+            // Calculate total commission
             let totalCommission = 0;
             orders.forEach(order => {
                 order.products.forEach(product => {
                     totalCommission += (product.price * (product.commissionPercentage / 100));
                 });
             });
+
+            // Save commission details to the database
             const commission = new Commission({
-                name:staffMember,
+                name: staffMember,
                 startDate,
                 endDate,
                 totalCommission,
@@ -30,8 +45,14 @@ const commissionController = {
             });
             await commission.save();
 
-            res.json({ totalCommission });
+            let commissionDetails = {
+                staffMember,
+                totalCommission
+            };
+            // Send response with total commission
+            res.json(commissionDetails);
         } catch (error) {
+            // Handle errors
             res.status(500).json({ message: error.message });
         }
     },
