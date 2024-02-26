@@ -6,8 +6,14 @@ const commissionController = {
     // Calculate commissions for a staff member within a specified date range
     calculateCommissions: async (req, res) => {
         try {
+
             const { staffMember, startDate, endDate } = req.body;
-            const orders = await Order.find({ staffMember, date: { $gte: startDate, $lte: endDate } }).populate('products');
+            console.log(new Date(startDate).toISOString().split('T')[0], new Date(endDate).toISOString().split('T')[0], 'date');
+            const orders = await Order.find({ staffMember,
+                date: {
+                    $gte: new Date(startDate).toISOString().split('T')[0],
+                    $lte: new Date(endDate).toISOString().split('T')[0]
+            } }).populate('products');
 
             let totalCommission = 0;
             orders.forEach(order => {

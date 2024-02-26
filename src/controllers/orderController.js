@@ -30,7 +30,11 @@ const orderController = {
             // Create an array to store promises for saving each order
             const orderPromises = ordersData.map(orderData => {
                 const { products, staffMember } = orderData;
-                const order = new Order({ products, staffMember });
+                const order = new Order({
+                    products,
+                    staffMember,
+                    date: new Date().toISOString().split('T')[0],
+                });
                 return order.save();
             });
 
