@@ -10,7 +10,13 @@ const productsController = {
             const startIndex = (page - 1) * limit;
             const endIndex = page * limit;
 
-            const products = await Product.find().skip(startIndex).limit(limit);
+            const products = await Product.find().skip(startIndex).limit(limit).lean();
+
+            // Modify each product object to change _id to id
+            products.forEach(product => {
+                product.id = product._id;
+                delete product._id;
+            });
 
             res.json(products);
         } catch (error) {

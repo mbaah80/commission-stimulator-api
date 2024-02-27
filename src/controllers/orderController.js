@@ -12,6 +12,17 @@ const orderController = {
         }
     },
 
+
+    // Get all orders
+    getOrders: async (req, res) => {
+        try {
+            const orders = await Order.find();
+            res.json(orders);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
     // Create a new order
     createOrders: async (req, res) => {
         try {

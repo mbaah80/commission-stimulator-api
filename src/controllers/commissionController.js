@@ -45,9 +45,28 @@ const commissionController = {
             });
             await commission.save();
 
+            // fetch the products and their commission percentage
+
+            const products = await Product.find({ _id: { $in: orders.map(order => order.products.map(product => product._id)).flat() } });
+
             let commissionDetails = {
                 staffMember,
-                totalCommission
+                totalCommission,
+                orders: orders.map(order => ({
+                    orderId: order._id,
+                    date: order.date,
+                    products: order.products.map(product => {
+                        const productDetails = products.find(p => p._id.toString() === product._id.toString());
+                        return {
+                            productId: product._id,
+                            name: productDetails.name,
+                            price: product.price,
+                            commissionPercentage: product.commissionPercentage,
+                            commission: (product.price * (product.commissionPercentage / 100))
+                        };
+                    })
+                })
+                )
             };
             // Send response with total commission
             res.json(commissionDetails);
