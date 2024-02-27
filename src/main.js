@@ -2,21 +2,18 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
 
 
-// Connect to MongoDB
-
-// use mongoAtlas url
-
-// mongoose.connect('mongodb://localhost:27017/meanstack', { useNewUrlParser: true, useUnifiedTopology: true })
-
-mongoose.connect('mongodb+srv://mbaah80:svABfz8ms9ytFIjy@cluster0.ggqi8n0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to the database');
     })
     .catch((error) => {
         console.error('Error connecting to the database:', error);
     });
+
 
 
 
