@@ -38,7 +38,12 @@ const productsController = {
             // Create an array to store promises for saving each product
             const productPromises = productsData.map(productData => {
                 const { name, category, price, commissionPercentage } = productData;
-                const product = new Product({ name, category, price, commissionPercentage });
+
+                // Set commissionPercentage to 0 if not provided or undefined
+                const commission = commissionPercentage !== undefined ? commissionPercentage : 0;
+
+
+                const product = new Product({ name, category, price, commissionPercentage: commission});
                 return product.save();
             });
 
